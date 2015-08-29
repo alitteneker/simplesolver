@@ -1,14 +1,24 @@
 <html>
-<head><title>Simple Solver</title></head>
-<script src="jquery-2.1.1.min.js"></script>
-<script src="solver.js"></script>
-<style type="text/css">* { font-size: 15px }</style>
-<body>
-<p>This process works by taking a js evaluatable string and some comma delimited variables, and attempts to find a set of variable settings which make the entire equation equal to zero.</p>
-<table>
-<tr><td>Equation:</td><td><input id="equation_inp" type="text"/></td></tr>
-<tr><td>Variables:</td><td><input id="variable_inp" type="text"/></td></tr>
-</table>
-<input id="solve_btn" type="button" text="Solve!"/>
-</body>
+  <head>
+    <title>Simple Solver</title>
+    <script src="jquery-2.1.1.min.js"></script>
+    <script src="solver.js"></script>
+    <style type="text/css">* { font-size: 15px }</style>
+  </head>
+  <body>
+
+    <p>This process works by taking a js evaluatable string and some comma delimited variables, and attempts to find a set of variable settings which make the entire equation equal to zero.</p>
+
+    <table>
+      <tr><td>Equation:</td><td><input id="equation_inp" type="text"/></td></tr>
+      <tr><td>Variables:</td><td><input id="variable_inp" type="text"/></td></tr>
+    </table>
+
+    <input id="solve_btn" type="button" text="Solve!"/>
+
+    <script>
+      /** This sets up the solve button listener */
+      $('#solve_btn').on('click', do_solve);
+    </script>
+  </body>
 </html>

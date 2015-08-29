@@ -1,8 +1,15 @@
+/**
+  * Copyright 2015 Alan Litteneker
+  *
+  * This script defines a set of functions for finding an approximate numerical solution to a generic
+  * expression. Given a list of variables over which to solve, it uses a simplified version of newton's
+  * method (sometimes referred to as relaxation theory in modern literature) to iteratively approach a
+  * system in which the expression is equal to zero, then outputs the found solution.
+  *
+  * Note that like most local search methods, this is extraordinarily susceptible to local minima.
+  */
 
-/** This sets up the solve button listener, and defines the solver function. */
-
-$('#solve_btn').on('click', do_solve);
-
+/** This */
 function solve() {
   var expr = $('#equation_inp').val(),
       var_names = $('#variable_inp').replace(' ', '').val().split(','),
@@ -59,9 +66,13 @@ function do_solve(expr, var_names) {
 }
 
 function calc_new_settings(expr, vars, var_names, var_length) {
-  var initial_delta = 1;
+  var initial_delta = 1, initial_value, name, delta;
 
   for( var i = 0; i < var_length; ++i ) {
+    name = var_names[i];
+    initial_value = vars[name];
+    delta = initial_delta;
+
 
   }
 
@@ -77,6 +88,9 @@ function initialize_values(var_names, var_length, initial_value) {
 }
 
 function calc_mse(result) {
+  if( arguments.length > 1 ) {
+    result = eval_expression.apply(arguments);
+  }
   return Math.pow(result, 2);
 }
 
