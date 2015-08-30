@@ -1,7 +1,7 @@
 * { font-size: 17px; }
 h1 { font-size: 25px; }
 body { padding: 20px; }
-button { margin: 15px; }
+button#solve_btn { margin: 15px; }
 
 #results_display { border-collapse: collapse; }
 #results_display td { border-style: solid; padding: 3px 7px; border-width: 1px; }

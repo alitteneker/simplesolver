@@ -3,37 +3,38 @@
     <title>Simple Solver</title>
     <script src="jquery-2.1.1.min.js"></script>
     <script src="solver.js"></script>
+    <script src="ui.js"></script>
     <link rel="stylesheet" href="pagestyle.css"></link>
   </head>
   <body>
 
     <h1>Simple Solver!</h1>
-    <p>This process works by taking a js evaluatable expression and a list of comma delimited variable names, and attempts to find a set of variable settings which make the entire equation equal to zero.</p>
+    <p>This process works by taking a js evaluatable expression and a list of comma delimited variable names, and attempts to find a set of real variable settings which make the entire equation equal to zero.</p>
 
     <table>
-      <tr><td>Expression:</td><td><input id="equation_inp" type="text"/></td></tr>
-      <tr><td>Variables:</td><td><input id="variable_inp" type="text"/></td></tr>
+      <tr>
+        <td>Variables:</td>
+        <td><table><tr><td><input id="variable_inp" type="text"/></td></tr></table></td>
+      </tr>
+      <tr>
+        <td>Expression:</td>
+        <td>
+          <table>
+            <tr>
+              <td><input class="expression_inp" type="text"/></td>
+              <td><button class="remove_expr_btn" style="display:none">-</button></td>
+            </tr>
+            <tr id="last_expr_row">
+              <td><button class="add_expr_button">+</button></td>
+              <td></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
     </table>
 
     <button id="solve_btn">Solve!</button><br/>
 
     <table id="results_display"><table>
-
-    <script>
-      /** This sets up the solve button listener */
-      $('#solve_btn').on('click', function() {
-        var expr = $('#equation_inp').val(),
-            var_names = $('#variable_inp').val().replace(' ', '').split(','),
-            results = solve(expr, var_names);
-
-        if( results !== undefined ) {
-          var output = "";
-          for( var key in results ) {
-            output += "<tr><td>" + key + "</td><td>" + results[key] + "</td></tr>";
-          }
-          $('#results_display').empty().append(output);
-        }
-      });
-    </script>
   </body>
 </html>
