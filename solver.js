@@ -10,15 +10,23 @@
   */
 
 /** This solves the system, and outputs the result to the page. */
-function solve() {
-  var expr = $('#equation_inp').val(),
-      var_names = $('#variable_inp').replace(' ', '').val().split(','),
-      result = do_solve(expr, var_names);
+function solve(expr, var_names) {
 
-  // TODO: display results in a more meaningful way
-  for( var key in result ) {
-    console.log( key + ": " + result[key] );
+  if( !expr.length || !var_names.length ) {
+    console.error("Invalid input");
+    return;
   }
+
+  var result;
+  try {
+    result = do_solve(expr, var_names);
+  }
+  catch(e) {
+    console.error(e);
+    return;
+  }
+
+  return result;
 }
 
 /** This actually solves for variable assignments, and returns the results. */
@@ -31,7 +39,7 @@ function do_solve(expr, var_names) {
 
       // The last deltas (initialized to 1)
       // TODO: initialize to something smarter
-      deltas = initialize_values(var_names, var_length, 0),
+      deltas = initialize_values(var_names, var_length, 1),
 
       // Cache the current value of the expression
       result = eval_expression(expr, vars, var_names, var_length),
@@ -41,7 +49,7 @@ function do_solve(expr, var_names) {
       last_mse = Infinity,
 
       // How low we need our mean squared error to drop before accepting the current values
-      thresh_mse_done = 0.01,
+      thresh_mse_done = 0.0001,
 
       // If our mse doesn't change by at least this much, then we can stop
       thresh_mse_stagnant = 0.0001,
@@ -62,42 +70,55 @@ function do_solve(expr, var_names) {
     mse = calc_mse(result);
   }
 
-  // store the last recorded _mse and _result for display
-  vars[_mse] = mse;
-  vars[_result] = mse;
+  // store some metadata for display
+  vars['_mse'] = mse;
+  vars['_result'] = result;
+  vars['_reps'] = reps;
 
   return vars;
 }
 
 function calc_new_settings(expr, vars, deltas, var_names, var_length) {
-  var min_delta_threshold = 0.0001,
-      test_mse, old_mse, name, old_delta, new_delta;
+  var min_delta = 0.0001,
+
+      old_mse = calc_mse(expr, vars, var_names, var_length),
+
+      // Some working variables
+      test_mse, name, old_delta, old_sign, initial_delta;
 
   for( var i = 0; i < var_length; ++i ) {
     name = var_names[i];
 
     old_delta = deltas[name];
-    new_delta = Math.sign(old_delta) * Math.max( Math.abs(old_delta), min_delta_threshold ) * 2;
+    old_sign = Math.sign(old_delta);
+
+    // initialize our delta to be double the old delta or our min_delta
+    initial_delta = deltas[name] =
+        2 * old_sign * Math.max( Math.abs(old_delta), min_delta );
 
     while( true ) {
       test_mse = calc_mse(expr, vars, var_names, var_length, deltas, name);
 
-      if( test_mse === old_mse ) {
-        continue;
+      if( test_mse < old_mse ) {
+        break;
       }
-      if( Math.abs(delta) < min_delta_threshold ) {
-        if( Math.sign(old_delta) === Math.sign(new_delta) ) {
-          new_delta =
+      else if( Math.abs(deltas[name]) < min_delta ) {
+        if( old_sign === Math.sign(deltas[name]) ) {
+          deltas[name] = -initial_delta;
+        }
+        else {
+          deltas[name] = 0;
+          break;
         }
       }
       else {
-        delta /= 2;
+        deltas[name] /= 2;
       }
     }
   }
 
   for( var i = 0; i < var_length; ++i ) {
-    deltas
+    vars[name] += deltas[name];
   }
   return eval_expression(expr, vars, var_names, var_length);
 }
@@ -119,7 +140,7 @@ function initialize_values(var_names, var_length, initial_value) {
 
 function calc_mse(result) {
   if( arguments.length > 1 ) {
-    result = eval_expression.apply(arguments);
+    result = eval_expression.apply(undefined, arguments);
   }
   return Math.pow(result, 2);
 }
