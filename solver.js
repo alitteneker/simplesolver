@@ -9,7 +9,7 @@
   * Note that like most local search methods, this is extraordinarily susceptible to local minima.
   */
 
-/** This */
+/** This solves the system, and outputs the result to the page. */
 function solve() {
   var expr = $('#equation_inp').val(),
       var_names = $('#variable_inp').replace(' ', '').val().split(','),
@@ -21,13 +21,17 @@ function solve() {
   }
 }
 
-/** This actually solves for vaiable assignments, though it too doesn't really  */
+/** This actually solves for variable assignments, and returns the results. */
 function do_solve(expr, var_names) {
 
   var var_length = var_names.length,
 
-      // The current var values
+      // The current var values (initialized to zero)
       vars = initialize_values(var_names, var_length, 0),
+
+      // The last deltas (initialized to 1)
+      // TODO: initialize to something smarter
+      deltas = initialize_values(var_names, var_length, 0),
 
       // Cache the current value of the expression
       result = eval_expression(expr, vars, var_names, var_length),
@@ -52,7 +56,7 @@ function do_solve(expr, var_names) {
     && reps++ < max_reps
   ) {
 
-    result = calc_new_settings(expr, vars, var_names, var_length);
+    result = calc_new_settings(expr, vars, deltas, var_names, var_length);
 
     last_mse = mse;
     mse = calc_mse(result);
@@ -65,26 +69,52 @@ function do_solve(expr, var_names) {
   return vars;
 }
 
-function calc_new_settings(expr, vars, var_names, var_length) {
-  var initial_delta = 1, initial_value, name, delta;
+function calc_new_settings(expr, vars, deltas, var_names, var_length) {
+  var min_delta_threshold = 0.0001,
+      test_mse, old_mse, name, old_delta, new_delta;
 
   for( var i = 0; i < var_length; ++i ) {
     name = var_names[i];
-    initial_value = vars[name];
-    delta = initial_delta;
 
+    old_delta = deltas[name];
+    new_delta = Math.sign(old_delta) * Math.max( Math.abs(old_delta), min_delta_threshold ) * 2;
 
+    while( true ) {
+      test_mse = calc_mse(expr, vars, var_names, var_length, deltas, name);
+
+      if( test_mse === old_mse ) {
+        continue;
+      }
+      if( Math.abs(delta) < min_delta_threshold ) {
+        if( Math.sign(old_delta) === Math.sign(new_delta) ) {
+          new_delta =
+        }
+      }
+      else {
+        delta /= 2;
+      }
+    }
   }
 
+  for( var i = 0; i < var_length; ++i ) {
+    deltas
+  }
   return eval_expression(expr, vars, var_names, var_length);
 }
 
-function initialize_values(var_names, var_length, initial_value) {
-  var vars = {}, i;
-  for( i = 0; i < var_length; ++i ) {
-    vars[var_names[i]] = initial_value;
+function eval_expression( expr, vars, var_names, var_length, deltas, active_delta) {
+  for( var i = 0; i < var_length; ++i ) {
+    window[var_names[i]] = vars[var_names[i]] + ( active_delta == var_names[i] ? deltas[var_names[i]] : 0 );
   }
-  return vars;
+  return eval(expr);
+}
+
+function initialize_values(var_names, var_length, initial_value) {
+  var data = {}, i;
+  for( i = 0; i < var_length; ++i ) {
+    data[var_names[i]] = initial_value;
+  }
+  return data;
 }
 
 function calc_mse(result) {
@@ -92,11 +122,4 @@ function calc_mse(result) {
     result = eval_expression.apply(arguments);
   }
   return Math.pow(result, 2);
-}
-
-function eval_expression( expr, vars, var_names, var_length ) {
-  for( var i = 0; i < var_length; ++i ) {
-    window[var_names[i]] = vars[var_names[i]];
-  }
-  return eval(expr);
 }
