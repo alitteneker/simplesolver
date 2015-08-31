@@ -9,7 +9,7 @@
   * Note that like most local search methods, this is extraordinarily susceptible to local minima.
   */
 
-/** This solves the system, and outputs the result to the page. */
+/** This solves the system (sort of, really just error handling for the real workers). */
 function solve(expr, var_names) {
 
   if( !expr.length || !var_names.length ) {
