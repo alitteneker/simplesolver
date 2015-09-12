@@ -2,7 +2,11 @@
 h1 { font-size: 25px; }
 body { padding: 20px; }
 button#solve_btn { margin: 15px; }
-
 .template_row { display: none; }
+.expression_table { width: 100%; }
+.remove_expr_hide { visibility: hidden; }
+td.exp_input_cell { padding-right: 10px; width: 90%; }
+td.exp_remove_cell { text-align: right; }
+span.expression_inp { width: 100%; }
 #results_display { border-collapse: collapse; }
 #results_display td { border-style: solid; padding: 3px 7px; border-width: 1px; }

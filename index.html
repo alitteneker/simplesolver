@@ -2,9 +2,48 @@
   <head>
     <title>Simple Solver</title>
     <script src="jquery-2.1.1.min.js"></script>
+    <script src="mathquill-0.9.4/mathquill.min.js"></script>
+    <script src="ohm.js"></script>
+    <script src="math.js"></script>
     <script src="solver.js"></script>
     <script src="ui.js"></script>
     <link rel="stylesheet" href="pagestyle.css"></link>
+    <link rel="stylesheet" type="text/css" href="mathquill-0.9.4/mathquill.css"></link>
+
+    <script type="text/ohm-js">
+      Arithmetic {
+      Exp
+      = AddExp
+
+      AddExp
+      = AddExp "+" MulExp  -- plus
+      | AddExp "-" MulExp  -- minus
+      | MulExp
+
+      MulExp
+      = MulExp "*" ExpExp  -- times
+      | MulExp "/" ExpExp  -- divide
+      | ExpExp
+
+      ExpExp
+      = PriExp "**" ExpExp  -- power
+      | PriExp
+
+      PriExp
+      = "(" Exp ")"  -- paren
+      | "+" PriExp   -- pos
+      | "-" PriExp   -- neg
+      | ident
+      | number
+
+      ident  (an identifier)
+      = letter alnum*
+
+      number  (a number)
+      = digit* "." digit+  -- fract
+      | digit+             -- whole
+      }
+    </script>
   </head>
   <body>
 
@@ -19,10 +58,10 @@
       <tr>
         <td>Expression:</td>
         <td>
-          <table>
+          <table class="expression_table">
             <tr class="template_row">
-              <td><input class="expression_inp" type="text"/></td>
-              <td><button class="remove_expr_btn" style="display:none">-</button></td>
+              <td class="exp_input_cell"><span class="expression_inp"></span></td>
+              <td class="exp_remove_cell"><button class="remove_expr_btn remove_expr_hide">-</button></td>
             </tr>
             <tr id="last_expr_row">
               <td><button id="add_expr_button">+</button></td>
